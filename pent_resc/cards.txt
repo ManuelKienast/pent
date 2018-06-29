@@ -1,0 +1,4 @@
+Strength Potion, adds +10 to your strength, Stren, 10, True
+Dexterity Potion, adds +10 to your dexterity, Dex, 10, True
+Intelligence Potion, adds +10 to your intelligence, Intel, 10, True
+Wisdom Potion, adds +10 to your wisdom, Wit, 10, True
