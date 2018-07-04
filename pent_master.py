@@ -217,7 +217,41 @@ test.getValue()
 test.increase_value(2)
 test.getValue()
 """
+# =============================================================================
+# 
+# die würfel sind gefallen:
+# =============================================================================
+
+class Dice():
     
+    
+    
+    
+    
+    def throw_dice(self, d6=1, d4=0):
+        
+        result_sum = 0
+        
+        for throws in range(d6):
+            result = random.randrange(1,7)
+            print(result)
+            result_sum += result
+            print(result_sum)
+                
+        
+        if d4 != 0:
+            
+            for throws in range(d4):
+                result = random.randrange(1,5)
+                print(result)
+                result_sum += result
+                print(result_sum)
+                
+        return result_sum
+            
+            
+#print(Dice().throw_dice(10))
+
 # =============================================================================
 # 
 # just read the fucking card:
@@ -469,18 +503,16 @@ class Player():
                  self.name, self.Intel, self.name, self.container.__str__())
     
     
-    def test_attribute(self, attribute, test_value):
+    def test_attribute(self, atr, test_value):
         """tests attribute, the self.atr against a test_value."""
         
         global tile_dict
         
-        atr = attribute
-        
         if atr >= test_value:
-            print('you passed')
+            print('you passed your check.')
             return True
         else:
-            print('you failed')
+            print('you failed your check.')
             return False
 
 
@@ -501,16 +533,9 @@ class Player():
                 print('\natrb choice accepted.')
                 break
         
-        if atr == 'Wit' and self.test_attribute(self.Wit.getValue(), tier[atr]) == True:
-            self.tier_complete += 1; print('\ngz, you are in tier', self.tier_complete,' now.')
-            self.level_up()
-        if atr == 'Stren' and self.test_attribute(self.Stren.getValue(), tier[atr]) == True:
-            self.tier_complete += 1; print('\ngz, you are in tier', self.tier_complete,' now.')
-            self.level_up()
-        if atr == 'Dex' and self.test_attribute(self.Dex.getValue(), tier[atr]) == True:
-            self.tier_complete += 1; print('\ngz, you are in tier', self.tier_complete,' now.')
-            self.level_up()
-        if atr == 'Intel' and self.test_attribute(self.Intel.getValue(), tier[atr]) == True:
+        atr_int = getattr(self, atr).getValue()
+        
+        if self.test_attribute(atr_int, tier[atr]):
             self.tier_complete += 1; print('\ngz, you are in tier', self.tier_complete,' now.')
             self.level_up()
             
@@ -523,28 +548,26 @@ class Player():
                                      (self.Wit, self.Stren, self.Dex, self.Intel))
         
         while True:
+            
             up = input('\nwhich atribute do you wanna level up(+1)? ').capitalize()
             
             if up not in self.atr_tup:
                 print('\nplease retype, couldnt understand your input.')
+            
+            else:
+                new_value = getattr(self, up).getValue() +1
+                setattr(self, up, new_value)
+                print(self)
+                break
                 
-            else:    
-                if up == 'Wit':
-                    self.Wit.increase_value(1); print('\ngz, your new self:\n', self); break
-                if up == 'Stren':
-                    self.Stren.increase_value(1); print('\ngz, your new self:\n', self); break
-                if up == 'Dex':
-                    self.Dex.increase_value(1); print('\ngz, your new self:\n', self); break
-                if up == 'Intel':
-                    self.Intel.increase_value(1); print('\ngz, your new self:\n', self); break
        
         
         
     def show_hand(self):
         
         if self.container.container_size():
-            print('\nThis is your current hand:') 
-            print(self.container.__str__())
+             
+            print('\nThis is your current hand:\n', self.container.__str__())
         else:
             print('your hand is empty, my friend.')
             
@@ -657,7 +680,15 @@ class Player():
         
     def return_from_yard(self):
         pass
-           
+    
+    
+#    def dice_pool(self):
+#        
+#        pool = ()
+#        
+#        if self.luck <= 2:
+#            pool = ()
+    
 
 drizzt = Player('Drizzt', 'can kill stuff', Wit(21), Stren(5), Dex(5), Intel(5))
 #print(drizzt)
@@ -665,6 +696,7 @@ drizzt = Player('Drizzt', 'can kill stuff', Wit(21), Stren(5), Dex(5), Intel(5))
 #print(drizzt)
 #drizzt.Dex.getValue()
 #drizzt.test_attribute(drizzt.Dex.getValue(), 11)
+#drizzt.tile_check()
 #type(drizzt.Dex)
 #drizzt.tile_check()
 #drizzt.Wit.ability()
@@ -675,8 +707,10 @@ drizzt.discard_card(5)
 #print(deck)
 drizzt.draw_card(1)
 drizzt.show_hand()
-drizzt.play_card()
+#drizzt.play_card()
 #print(graveyard)
+
+print(drizzt)
 
 # =============================================================================
 #     
@@ -686,10 +720,10 @@ drizzt.play_card()
 if __name__ == '__main__':
     
     tile_dict = Board(10, 1, 4).dict_
-#    for i in tile_dict['Tracks']:
-#        print('\n', i)
+    for i in tile_dict['Tracks']:
+        print('\n', i)
     
-    tile_dict = {}
+    
     graveyard = Graveyard()
     deck = Deck()
  
