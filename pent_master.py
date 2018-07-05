@@ -118,6 +118,27 @@ for i in tr_dict['Tracks']:
     print('\n\n', i)
 """    
 
+# =============================================================================
+# 
+# about the Players -- managing the beast:
+# =============================================================================
+
+class PMS():
+    
+    def __init__(self):
+        self.player_dict = {}
+        
+    
+    def __str__(self):
+        return self.player_dict.items()
+    
+    
+    def create_player(self):
+        
+        name = input('name your player: >')
+        self.player_dict[name] = Player(name, 'can kill stuff', Wit(20), Stren(5), Dex(5), Intel(5))
+    
+
 
 # =============================================================================
 # 
@@ -136,8 +157,11 @@ class Attribute:
     def increase_value(self, increment):
         self.value += increment
         
-    def getValue(self):
+    def get_value(self):
         return int(self.value)
+    
+    def set_value(self, value):
+        setattr(self, 'value', value)
     
         
 class Wit(Attribute):
@@ -210,22 +234,22 @@ class Intel(Attribute):
 
 
 
-"""
+'''
 test = Wit(5)
 print(test)
-test.getValue()
+type(test)
+test.get_value()
 test.increase_value(2)
-test.getValue()
-"""
+test.get_value()
+test.set_value(-5)
+type(test)
+'''
 # =============================================================================
 # 
 # die würfel sind gefallen:
 # =============================================================================
 
 class Dice():
-    
-    
-    
     
     
     def throw_dice(self, d6=1, d4=0):
@@ -299,63 +323,82 @@ class Card():
             
             if self.temp:
                 
-                if self.atr == 'Stren' and not player.Stren.getValue() + self.atri_mod < 0:
-                    player.Stren.increase_value(self.atri_mod)
+                player_atr   = getattr(player, self.atr).get_value()
+                modified_atr = player_atr + self.atri_mod
+                
+                if modified_atr < 0:
+                    value = getattr(player, self.atr)
+                    value.set_value(0)
+                    
                 else:
-                    setattr(player, 'Stren', Stren(0))
+                    value = getattr(player, self.atr)
+                    value_int = value.get_value()
+                    value.set_value(value_int + self.atri_mod)
+                    #value.increase_value(self.atri_mod)
                 
-                if self.atr == 'Dex' and not player.Dex.getValue() + self.atri_mod < 0:
-                    player.Dex.increase_value(self.atri_mod)
-                else:
-                    setattr(player, 'Dex', Dex(0))
+                setattr(player, self.atr, value)
                 
-                if self.atr == 'Wit' and not player.Wit.getValue() + self.atri_mod < 0:
-                    player.Wit.increase_value(self.atri_mod)
-                else:
-                    setattr(player, 'Wit', Wit(0))
-                
-                if self.atr == 'Intel' and not player.Wit.getValue() + self.atri_mod < 0:
-                    player.Wit.increase_value(self.atri_mod)
-                else:
-                    setattr(player, 'Wit', Wit(0))
-                
-            
-            else:    
-                
-                if self.atr == 'Stren' and not player.Stren.getValue() + self.atri_mod < 0:
-                    player.Stren.increase_value(self.atri_mod)
-                else:
-                    setattr(player, 'Stren', Stren(0))
-                
-                if self.atr == 'Dex' and not player.Dex.getValue() + self.atri_mod < 0:
-                    player.Dex.increase_value(self.atri_mod)
-                else:
-                    setattr(player, 'Dex', Dex(0))
-                
-                if self.atr == 'Wit' and not player.Wit.getValue() + self.atri_mod < 0:
-                    player.Wit.increase_value(self.atri_mod)
-                else:
-                    setattr(player, 'Wit', Wit(0))
-                
-                if self.atr == 'Intel' and not player.Wit.getValue() + self.atri_mod < 0:
-                    player.Wit.increase_value(self.atri_mod)
-                else:
-                    setattr(player, 'Wit', Wit(0))
-        else: 
-            print('it is not a moddable target.')
-                
-        
-"""   
-testCard = Card('Strength Potion', 'adds +2 to your strength', 'Stren', 10, True)
-print(testCard)
-a = testCard.test_card()
-print(a)
+'''try passing the player with the actual player class object from dict reference 
+created during player instanciation, not with its instance aka drizzt
+or use the Player().name class attribute
 
-testCard.mod_player(drizzt)
-print(drizzt)
-#print(drizzt.Stren.getValue)
-#print(dir(Player))
-"""
+also need that dict for player managment which needs to happen during instanciation pref 
+as a dict, where player name is the key the object is referenced'''
+
+deck = Deck()
+drizzt = Player('drizzt', 'can kill stuff', Wit(21), Stren(5), Dex(5), Intel(5))
+drizzt.draw_card(5)
+active_Card = drizzt.select_card_by_name()
+input_ = input('player name: >')
+active_Card.mod_player(drizzt); print(drizzt)
+
+                    
+#                if self.atr == 'Stren' and not player.Stren.get_value() + self.atri_mod < 0:
+#                    player.Stren.increase_value(self.atri_mod)
+#                else:
+#                    setattr(player, 'Stren', Stren(0))
+#                
+#                if self.atr == 'Dex' and not player.Dex.get_value() + self.atri_mod < 0:
+#                    player.Dex.increase_value(self.atri_mod)
+#                else:
+#                    setattr(player, 'Dex', Dex(0))
+#                
+#                if self.atr == 'Wit' and not player.Wit.get_value() + self.atri_mod < 0:
+#                    player.Wit.increase_value(self.atri_mod)
+#                else:
+#                    setattr(player, 'Wit', Wit(0))
+#                
+#                if self.atr == 'Intel' and not player.Wit.get_value() + self.atri_mod < 0:
+#                    player.Wit.increase_value(self.atri_mod)
+#                else:
+#                    setattr(player, 'Wit', Wit(0))
+#                
+#            
+#            else:    
+#                
+#                if self.atr == 'Stren' and not player.Stren.get_value() + self.atri_mod < 0:
+#                    player.Stren.increase_value(self.atri_mod)
+#                else:
+#                    setattr(player, 'Stren', Stren(0))
+#                
+#                if self.atr == 'Dex' and not player.Dex.get_value() + self.atri_mod < 0:
+#                    player.Dex.increase_value(self.atri_mod)
+#                else:
+#                    setattr(player, 'Dex', Dex(0))
+#                
+#                if self.atr == 'Wit' and not player.Wit.get_value() + self.atri_mod < 0:
+#                    player.Wit.increase_value(self.atri_mod)
+#                else:
+#                    setattr(player, 'Wit', Wit(0))
+#                
+#                if self.atr == 'Intel' and not player.Wit.get_value() + self.atri_mod < 0:
+#                    player.Wit.increase_value(self.atri_mod)
+#                else:
+#                    setattr(player, 'Wit', Wit(0))
+#        else: 
+#            print('it is not a moddable target.')
+                
+
 
 # =============================================================================
 # 
@@ -384,34 +427,27 @@ class Card_container:
         
         if self.name == 'deck':
         
-            file_path = 'pent_resc\\cards.txt'
+            file_path = 'pent_resc/cards.txt'
             deck_list = []            
-            #fopen = open(file_path, 'r', encoding = 'utf-8')
             fopen = open(file_path, 'r')
             
             for line in fopen:
                 
-                print(line)
                 text_list = line.split(', ')
-                print(text_list)
                 list_format = [text_list[0], text_list[1], text_list[2], int(text_list[3]), bool(text_list[4]), 'deck']
-                print(list_format)
-                print('\n')
                 deck_list.append(Card(*list_format))
                 
-                
+            print('\nDeck created:\n', deck.__str__())
             fopen.close()
-            print(deck_list)
-            return deck_list
-        
+                
         if self.name == 'hand':
-            list_ = []
-            return list_
-        
+            deck_list = []
+            
         if self.name == 'yard':
-            list_ = []
-            return list_
-        
+            deck_list = []
+            
+        return deck_list
+    
     
     def container_size(self):
         
@@ -469,9 +505,6 @@ class Graveyard(Card_container):
         self.container = self.initialize_container()
         self.size      = self.container_size()
         
-    
-    
-
 
 # =============================================================================
 #     
@@ -533,10 +566,11 @@ class Player():
                 print('\natrb choice accepted.')
                 break
         
-        atr_int = getattr(self, atr).getValue()
+        atr_int = getattr(self, atr).get_value()
         
         if self.test_attribute(atr_int, tier[atr]):
-            self.tier_complete += 1; print('\ngz, you are in tier', self.tier_complete,' now.')
+            self.tier_complete += 1
+            print('\ngz, you are in tier', self.tier_complete,' now.')
             self.level_up()
             
             
@@ -555,27 +589,26 @@ class Player():
                 print('\nplease retype, couldnt understand your input.')
             
             else:
-                new_value = getattr(self, up).getValue() +1
+                new_value = getattr(self, up).get_value() +1
                 setattr(self, up, new_value)
                 print(self)
                 break
                 
        
-        
-        
     def show_hand(self):
         
         if self.container.container_size():
-             
             print('\nThis is your current hand:\n', self.container.__str__())
         else:
             print('your hand is empty, my friend.')
             
             
     def select_card_by_name(self):
+        """lets player select one card by name from hand."""
         
-        card_names = [card.name for card in self.container.container]
         hand       = self.container.container
+        card_names = [card.name for card in hand]
+        
         
         if not hand:
             print('\nyou have nothing to select, draw some cards. duh.')
@@ -666,15 +699,15 @@ class Player():
         
         self.show_hand()
         active_card = self.select_card_by_name()
-        try:
-            hand.remove(active_card)
-        except ValueError:
-            print('you have nothing to play')
+        
+        hand.remove(active_card)
         graveyard.container.append(active_card)
         active_card.location = 'yard'
-        player = input('choose the player to target with {}: >'.format(active_card.name))
-        print(player)
         
+        player = input('choose the player to target with {}: >'.format(active_card.name))
+        active_card.mod_player(player)
+        
+        print('SCHALALALALLALLALALALLALA')
         
         
         
@@ -689,13 +722,13 @@ class Player():
 #        if self.luck <= 2:
 #            pool = ()
     
-
+'''
 drizzt = Player('Drizzt', 'can kill stuff', Wit(21), Stren(5), Dex(5), Intel(5))
 #print(drizzt)
 #drizzt.Dex.increase_value(15)
 #print(drizzt)
-#drizzt.Dex.getValue()
-#drizzt.test_attribute(drizzt.Dex.getValue(), 11)
+#drizzt.Dex.get_value()
+#drizzt.test_attribute(drizzt.Dex.get_value(), 11)
 #drizzt.tile_check()
 #type(drizzt.Dex)
 #drizzt.tile_check()
@@ -706,12 +739,12 @@ drizzt.discard_card(5)
 #print(graveyard)
 #print(deck)
 drizzt.draw_card(1)
-drizzt.show_hand()
-#drizzt.play_card()
+#drizzt.show_hand()
+drizzt.play_card()
 #print(graveyard)
 
 print(drizzt)
-
+'''
 # =============================================================================
 #     
 # game logic - functional
