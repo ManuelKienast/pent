@@ -125,20 +125,65 @@ for i in tr_dict['Tracks']:
 
 class PMS():
     
-    def __init__(self):
-        self.player_dict = {}
+    def __init__(self, player_dict=None, no_of_players=0):
+        
+        self.no_of_players = self.init_pms()
+        self.player_dict = self.create_player()
         
     
     def __str__(self):
-        return self.player_dict.items()
+        
+        players = ''
+        for name in self.player_dict:
+            players += self.player_dict[name].__str__() + '\n'
+            
+        return players
     
+    
+    def init_pms(self):
+        
+        while True:
+            
+            no_of_players = input('how many players will be participating(max 5)? Give me a number! >')
+            
+            if no_of_players in ['1', '2', '3', '4', '5']:
+                
+                return int(no_of_players)
+                
+            else:
+                print('you need to enter a number like: 1 or 2 up to 5')
+            
+            
+            
     
     def create_player(self):
         
-        name = input('name your player: >')
-        self.player_dict[name] = Player(name, 'can kill stuff', Wit(20), Stren(5), Dex(5), Intel(5))
-    
+        players = {}
+        for i in range(self.no_of_players):
+            name = input('name your player: >')
+            players[name] = Player(name, 'can kill stuff', Wit(20), Stren(5), Dex(5), Intel(5))
+        return players
 
+    
+    def show_players(self):
+        
+        for name in self.player_dict:
+            print(self.player_dict[name])
+            
+            
+
+player_dict = PMS()
+player_dict = PMS().create_player()
+print(player_dict.no_of_players)
+#player_dict.create_player()
+#print(player_dict)
+#print(player_dict)
+#player_dict
+print(player_dict)
+#player_dict.show_players()
+#type(player_dict)
+#p = getattr(player_dict, 'player_dict')
+#print(p['hank'])
 
 # =============================================================================
 # 
@@ -235,6 +280,9 @@ class Intel(Attribute):
 
 
 '''
+atr = Attribute(6)
+print(atr)
+type(atr)
 test = Wit(5)
 print(test)
 type(test)
@@ -345,13 +393,14 @@ or use the Player().name class attribute
 also need that dict for player managment which needs to happen during instanciation pref 
 as a dict, where player name is the key the object is referenced'''
 
+"""
 deck = Deck()
 drizzt = Player('drizzt', 'can kill stuff', Wit(21), Stren(5), Dex(5), Intel(5))
 drizzt.draw_card(5)
 active_Card = drizzt.select_card_by_name()
 input_ = input('player name: >')
 active_Card.mod_player(drizzt); print(drizzt)
-
+"""
                     
 #                if self.atr == 'Stren' and not player.Stren.get_value() + self.atri_mod < 0:
 #                    player.Stren.increase_value(self.atri_mod)
@@ -437,7 +486,8 @@ class Card_container:
                 list_format = [text_list[0], text_list[1], text_list[2], int(text_list[3]), bool(text_list[4]), 'deck']
                 deck_list.append(Card(*list_format))
                 
-            print('\nDeck created:\n', deck.__str__())
+            print('\nDeck created:\n')
+            #deck.__str__()
             fopen.close()
                 
         if self.name == 'hand':
@@ -722,9 +772,9 @@ class Player():
 #        if self.luck <= 2:
 #            pool = ()
     
-'''
+
 drizzt = Player('Drizzt', 'can kill stuff', Wit(21), Stren(5), Dex(5), Intel(5))
-#print(drizzt)
+print(player_dict['drizzt'])
 #drizzt.Dex.increase_value(15)
 #print(drizzt)
 #drizzt.Dex.get_value()
@@ -738,7 +788,7 @@ drizzt = Player('Drizzt', 'can kill stuff', Wit(21), Stren(5), Dex(5), Intel(5))
 drizzt.discard_card(5)
 #print(graveyard)
 #print(deck)
-drizzt.draw_card(1)
+player_dict['drizzt'].draw_card(1)
 #drizzt.show_hand()
 drizzt.play_card()
 #print(graveyard)
@@ -752,11 +802,13 @@ print(drizzt)
 
 if __name__ == '__main__':
     
+    graveyard = Graveyard()
+    deck = Deck()
+    print(deck)
     tile_dict = Board(10, 1, 4).dict_
     for i in tile_dict['Tracks']:
         print('\n', i)
     
     
-    graveyard = Graveyard()
-    deck = Deck()
+    
  
