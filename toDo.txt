@@ -1,0 +1,42 @@
+still to implement:
+
+
+turn cycle:
+player card playable status:		self.active: Yes | No
+player active turn status:		self.active: Yes | No
+player needs active buff status:	needs to reset at beginning of each of its turns
+option to pass playing cards:		yield turn 
+
+
+dice pool:
+needs the pool for each atr:		no of d6/d4/exploding
+needs accumulated successes for chal:	builds up till challange complet, resets afterwards
+need to change test tile for dice:	implement the dice version over static buffs
+
+
+player stats:
+needs the dependent atr:		implement luck/card_draw etc dependent on main atr
+needs to react to atr changes:		hard - also requires adjustment of skills
+
+
+
+
+turn cycle:
+- order of active players based on creation order
+- on player's beginning of turn reset: challange tile attempted, play cards
+- player can: play card, challange tile, distribute excess atr points to skills, play cards again
+- after playing cards, give option to other players to respond
+- after final active player declines to play any more cards set play cards to No.
+
+
+
+challange options: preferrence to B, implement A) first, easier but has pool already
+
+A):
+	fixed tile value to beat with sum of all dice thrown, success pool
+
+B):
+	tile value of neccessary successes, e.g. 4, against a challange value, i.e. 1-6
+
+C):
+	no success pool, just straight up the sum of dice vs. challange value
