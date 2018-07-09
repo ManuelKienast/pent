@@ -20,7 +20,8 @@ print(random.getrandbits(5))
 # Variables
 # =============================================================================
 
-# one board track with all tiles from start to finish
+# list of still available tracks:
+available_tracks = [1, 2, 3, 4, 5]
 
 
 # =============================================================================
@@ -41,7 +42,9 @@ class Board:
         self.track3  = self.build_track()
         self.track4  = self.build_track()
         self.track5  = self.build_track()
-        self.dict_   = {'Tracks': [self.track1, self.track2, self.track3, self.track4, self.track5]}
+        self.dict_   = {'Track1': self.track1, 'Track2': self.track2,\
+                        'Track3': self.track3, 'Track4': self.track4,\
+                        'Track5': self.track5}
 
         
         if 'Wit' in self.value.keys(): 
@@ -65,6 +68,15 @@ class Board:
             self.Intel =  None
      
     
+    def __str__(self):
+        
+        string = ''
+        for count, track in enumerate(self.dict_.values(), 1):
+            for tile in track.items():
+                string += '\nTrack Number: {} --> Tier: {}, '.format(count, tile)
+        return string
+        
+    
     def create_tile(self, min_val, max_val):
         
         pos = ['Wit', 'Stren', 'Dex', 'Intel']
@@ -81,7 +93,7 @@ class Board:
         var_min = self.min_val
         var_max = self.max_val
         
-        for i in range(self.length):
+        for i in range(1, self.length+1):
             
             tile_dict[i] = self.create_tile(var_min, var_max)
             var_min += 3
@@ -89,101 +101,14 @@ class Board:
             
         print('tile_track created.')
         return tile_dict
-    
 
-
-#    def __str__(self):
-#        return '\n'.join(str(i) for i in self.dict_['Tracks'])
-#    
-#    def __str__(self):
-#        #return '{}'.format(i) (for board.dict_['Tracks'][i] in board.dict_)
-#        return ','.join("{}\n".format(i) for i in self.dict_['Tracks'])
-#        
-#    def __str__(self):
-#        return ('{}\n{}\n{}\n{}\n{}'.format(self.track1, self.track2, self.track3, self.track4, self.track5))
+"""        
+print(board)
+td = Board(10,1,4)
+print(td.dict_)
 
 """
-board = Board(10, 1, 4)
-print(board.track1, board.track2)
-track1 = Board(10, 1, 4).track1
-print(track1)
-track2 = Board(10, 1, 4).track2
-print(track2)
-print(board.dict_['Tracks'][3])
-print(board)
 
-tr_dict = board.dict_
-
-for i in tr_dict['Tracks']:
-    print('\n\n', i)
-"""    
-
-# =============================================================================
-# 
-# about the Players -- managing the beast:
-# =============================================================================
-
-class PMS():
-    
-    def __init__(self, player_dict=None, no_of_players=0):
-        
-        self.no_of_players = self.init_pms()
-        self.player_dict = self.create_player()
-        
-    
-    def __str__(self):
-        
-        players = ''
-        for name in self.player_dict:
-            players += self.player_dict[name].__str__() + '\n'
-            
-        return players
-    
-    
-    def init_pms(self):
-        
-        while True:
-            
-            no_of_players = input('how many players will be participating(max 5)? Give me a number! >')
-            
-            if no_of_players in ['1', '2', '3', '4', '5']:
-                
-                return int(no_of_players)
-                
-            else:
-                print('you need to enter a number like: 1 or 2 up to 5')
-            
-            
-            
-    
-    def create_player(self):
-        
-        players = {}
-        for i in range(self.no_of_players):
-            name = input('name your player: >')
-            players[name] = Player(name, 'can kill stuff', Wit(20), Stren(5), Dex(5), Intel(5))
-        return players
-
-    
-    def show_players(self):
-        
-        for name in self.player_dict:
-            print(self.player_dict[name])
-            
-            
-
-player_dict = PMS()
-player_dict = PMS().create_player()
-print(player_dict.no_of_players)
-#player_dict.create_player()
-#print(player_dict)
-#print(player_dict)
-#player_dict
-print(player_dict)
-#player_dict.show_players()
-#type(player_dict)
-#p = getattr(player_dict, 'player_dict')
-#print(p['hank'])
 
 # =============================================================================
 # 
@@ -277,21 +202,6 @@ class Intel(Attribute):
             print('woaah')
     
 
-
-
-'''
-atr = Attribute(6)
-print(atr)
-type(atr)
-test = Wit(5)
-print(test)
-type(test)
-test.get_value()
-test.increase_value(2)
-test.get_value()
-test.set_value(-5)
-type(test)
-'''
 # =============================================================================
 # 
 # die würfel sind gefallen:
@@ -401,52 +311,6 @@ active_Card = drizzt.select_card_by_name()
 input_ = input('player name: >')
 active_Card.mod_player(drizzt); print(drizzt)
 """
-                    
-#                if self.atr == 'Stren' and not player.Stren.get_value() + self.atri_mod < 0:
-#                    player.Stren.increase_value(self.atri_mod)
-#                else:
-#                    setattr(player, 'Stren', Stren(0))
-#                
-#                if self.atr == 'Dex' and not player.Dex.get_value() + self.atri_mod < 0:
-#                    player.Dex.increase_value(self.atri_mod)
-#                else:
-#                    setattr(player, 'Dex', Dex(0))
-#                
-#                if self.atr == 'Wit' and not player.Wit.get_value() + self.atri_mod < 0:
-#                    player.Wit.increase_value(self.atri_mod)
-#                else:
-#                    setattr(player, 'Wit', Wit(0))
-#                
-#                if self.atr == 'Intel' and not player.Wit.get_value() + self.atri_mod < 0:
-#                    player.Wit.increase_value(self.atri_mod)
-#                else:
-#                    setattr(player, 'Wit', Wit(0))
-#                
-#            
-#            else:    
-#                
-#                if self.atr == 'Stren' and not player.Stren.get_value() + self.atri_mod < 0:
-#                    player.Stren.increase_value(self.atri_mod)
-#                else:
-#                    setattr(player, 'Stren', Stren(0))
-#                
-#                if self.atr == 'Dex' and not player.Dex.get_value() + self.atri_mod < 0:
-#                    player.Dex.increase_value(self.atri_mod)
-#                else:
-#                    setattr(player, 'Dex', Dex(0))
-#                
-#                if self.atr == 'Wit' and not player.Wit.get_value() + self.atri_mod < 0:
-#                    player.Wit.increase_value(self.atri_mod)
-#                else:
-#                    setattr(player, 'Wit', Wit(0))
-#                
-#                if self.atr == 'Intel' and not player.Wit.get_value() + self.atri_mod < 0:
-#                    player.Wit.increase_value(self.atri_mod)
-#                else:
-#                    setattr(player, 'Wit', Wit(0))
-#        else: 
-#            print('it is not a moddable target.')
-                
 
 
 # =============================================================================
@@ -516,25 +380,6 @@ class Deck(Card_container):
         self.container = self.initialize_container()
         self.size      = self.container_size()
         
-"""        
-print("*" * 40)
-deck = Deck()
-type(deck)    
-print(deck)
-print(deck.container)
-print("*" * 40)
-
-for card in deck.container:
-    if card.name == 'Dexterity Potion':
-        active_card = card
-        print(active_card)
-        
-card = [card for card in deck.container if card.name == 'Dexterity Potion']
-print(card)
-index = next(i for i, card in enumerate(deck.container) if card.name == 'Strength Potion')
-print(deck.container[index])
-"""
-
 
 class Hand(Card_container):
     
@@ -577,6 +422,9 @@ class Player():
         self.tier_complete = 0
         self.container     = Hand()
         self.hand_size     = self.container.container_size()
+        self.card_playable = 'no'
+        self.active_turn   = 'no'
+        self.success_pool  = 0
        
     
     def __str__(self):
@@ -584,6 +432,8 @@ class Player():
                 \n{}'s Intel: {} \n{}'s Cards: \n{}".format\
                 (self.name, self.name, self.Wit, self.name, self.Stren, self.name, self.Dex,\
                  self.name, self.Intel, self.name, self.container.__str__())
+    
+    
     
     
     def test_attribute(self, atr, test_value):
@@ -764,37 +614,151 @@ class Player():
     def return_from_yard(self):
         pass
     
+    def select_track(self):
+        
+        for count, track in enumerate(board.dict_, 1):
+            if count in available_tracks:
+                print('\n', track, ':\n', board.dict_[track])
+        
+        #track = input('Choose the track you want to challenge. Give a number 1-5: >')
     
-#    def dice_pool(self):
-#        
-#        pool = ()
-#        
-#        if self.luck <= 2:
-#            pool = ()
     
+print(p1)
+p1.select_track()
 
-drizzt = Player('Drizzt', 'can kill stuff', Wit(21), Stren(5), Dex(5), Intel(5))
-print(player_dict['drizzt'])
-#drizzt.Dex.increase_value(15)
-#print(drizzt)
-#drizzt.Dex.get_value()
-#drizzt.test_attribute(drizzt.Dex.get_value(), 11)
-#drizzt.tile_check()
-#type(drizzt.Dex)
-#drizzt.tile_check()
-#drizzt.Wit.ability()
-#deck.container_size()
-#print(drizzt)
-drizzt.discard_card(5)
-#print(graveyard)
-#print(deck)
-player_dict['drizzt'].draw_card(1)
-#drizzt.show_hand()
-drizzt.play_card()
-#print(graveyard)
+# =============================================================================
+# 
+# about the Players -- managing the beast:
+# =============================================================================
 
-print(drizzt)
-'''
+class PMS():
+    
+    def __init__(self, **kwargs):
+        
+        self.number        = False
+        self.name          = []
+        
+        acceptable_kwargs = ['number', 'name']
+        for k in kwargs.keys():
+            if k in acceptable_kwargs:
+                setattr(self, k, kwargs[k])
+        
+        self.no_of_players = self.init_pms()
+        self.player_dict   = self.create_player()
+        self.player_list   = self.create_player_list()
+        
+        
+    def __str__(self):
+        
+        players = ''
+        for name in self.player_dict:
+            players += self.player_dict[name].__str__() + '\n'
+            
+        return players
+    
+    
+    def init_pms(self):
+        
+        if not self.number:
+            
+            while True:
+                
+                no_of_players = input('how many players will be participating(max 5)? Give me a number! >')
+                
+                if no_of_players in ['1', '2', '3', '4', '5']:
+                    
+                    return int(no_of_players)
+                    
+                else:
+                    print('you need to enter a number like: 1 or 2 up to 5')
+                    
+        else:
+            return self.number
+            
+            
+    def create_player(self):
+        
+        players = {}
+        
+        if not self.name:
+            
+            for i in range(self.no_of_players):
+                name = input('name your player: >')
+                players[name] = Player(name, 'can kill stuff', Wit(20), Stren(5), Dex(5), Intel(5))
+            
+        else:
+            for name in self.name:
+                players[name] = Player(name, 'can kill stuff', Wit(20), Stren(5), Dex(5), Intel(5))
+            
+        
+        if len(players) < 6:
+            for dummy_players in range(len(players), 5):
+                name = 'dummy' + str(dummy_players + 1)
+                players[name] = Player(name, 'im not here, really', Wit(0), Stren(0), Dex(0), Intel(0))
+    
+        return players
+    
+    
+    def create_player_list(self):
+        
+        player_list = []
+        max_player = 5
+        
+        for i in self.player_dict.keys():
+            
+            player_list.append(i)
+            
+        player_list = (player_list + max_player * [None])[:max_player]
+        
+        return player_list
+        
+    
+    def show_players(self):
+        
+        for name in self.player_dict:
+            print(self.player_dict[name])
+            
+    
+    
+            
+            
+
+player_dict = PMS(number=2, name = ['frank', 'tank']); print(player_dict)
+player_dict.player_list
+
+#player_dict = PMS().create_player()
+#print(player_dict.no_of_players)
+#print(player_dict)
+#print(player_dict.player_list)
+#player_dict.show_players()
+#player_dict.create_player()
+#print(player_dict)
+#player_dict
+#print(player_dict)
+#player_dict.show_players()
+#type(player_dict)
+#p = getattr(player_dict, 'player_dict')
+#print(p['hank'])
+
+
+
+# =============================================================================
+# 
+# all you need is functions to run:
+# =============================================================================
+
+def bind_players_to_vars():
+    """Binds all active players to vars: p1 - p5 to access the player instances."""
+    
+    for player in player_dict.player_list:
+        
+        yield player_dict.player_dict[player]
+            
+        
+p1, p2, p3, p4, p5 = bind_players_to_vars()
+print(p1.Dex)
+
+
 # =============================================================================
 #     
 # game logic - functional
@@ -805,9 +769,9 @@ if __name__ == '__main__':
     graveyard = Graveyard()
     deck = Deck()
     print(deck)
+    board = Board(10, 1, 4)
     tile_dict = Board(10, 1, 4).dict_
-    for i in tile_dict['Tracks']:
-        print('\n', i)
+    
     
     
     
