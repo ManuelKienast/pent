@@ -11,6 +11,7 @@ the pentaton logic go around II
 
 import random
 
+
 random.seed(0)
 print(random.getrandbits(5))
 
@@ -21,7 +22,7 @@ print(random.getrandbits(5))
 # =============================================================================
 
 # list of still available tracks:
-available_tracks = [1, 2, 3, 4, 5]
+available_tracks = ['1', '2', '3', '4', '5']
 
 
 # =============================================================================
@@ -303,14 +304,12 @@ or use the Player().name class attribute
 also need that dict for player managment which needs to happen during instanciation pref 
 as a dict, where player name is the key the object is referenced'''
 
-"""
+
 deck = Deck()
-drizzt = Player('drizzt', 'can kill stuff', Wit(21), Stren(5), Dex(5), Intel(5))
-drizzt.draw_card(5)
-active_Card = drizzt.select_card_by_name()
+p1.draw_card(5)
+active_Card = p1.select_card_by_name()
 input_ = input('player name: >')
-active_Card.mod_player(drizzt); print(drizzt)
-"""
+active_Card.mod_player(p1); print(p1)
 
 
 # =============================================================================
@@ -434,6 +433,23 @@ class Player():
                  self.name, self.Intel, self.name, self.container.__str__())
     
     
+    def select_track(self):
+        
+        for count, track in enumerate(board.dict_, 1):
+            if str(count) in available_tracks:
+                print('\n', track, ':\n', board.dict_[track])
+        
+        while True:
+            track = input('Choose the track you want to challenge. Give me a number 1-5: >')
+            if track in available_tracks:
+                break
+        
+        available_tracks.remove(track)
+        self.track = track
+        
+        board_dict_key = 'Track' + track
+        print('those tracks are still available', available_tracks)
+        print('you chose track number: ', track, board.dict_[board_dict_key])
     
     
     def test_attribute(self, atr, test_value):
@@ -595,7 +611,7 @@ class Player():
     
     def play_card(self):
         
-        hand       = self.container.container
+        hand = self.container.container
         
         self.show_hand()
         active_card = self.select_card_by_name()
@@ -604,6 +620,7 @@ class Player():
         graveyard.container.append(active_card)
         active_card.location = 'yard'
         
+        print('these are the availabel players: ', player_dict[:player_dict.no_of_players])
         player = input('choose the player to target with {}: >'.format(active_card.name))
         active_card.mod_player(player)
         
@@ -614,17 +631,12 @@ class Player():
     def return_from_yard(self):
         pass
     
-    def select_track(self):
-        
-        for count, track in enumerate(board.dict_, 1):
-            if count in available_tracks:
-                print('\n', track, ':\n', board.dict_[track])
-        
-        #track = input('Choose the track you want to challenge. Give a number 1-5: >')
-    
-    
+            
 print(p1)
+p1.draw_card(1)
+p1.play_card()
 p1.select_track()
+p1.track
 
 # =============================================================================
 # 
@@ -725,6 +737,7 @@ class PMS():
 
 player_dict = PMS(number=2, name = ['frank', 'tank']); print(player_dict)
 player_dict.player_list
+player_dict.show_players()
 
 #player_dict = PMS().create_player()
 #print(player_dict.no_of_players)
