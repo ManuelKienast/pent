@@ -10,6 +10,7 @@ the pentaton logic go around II
 
 
 import random
+import time
 
 
 random.seed(0)
@@ -211,29 +212,37 @@ class Intel(Attribute):
 class Dice():
     
     
-    def throw_dice(self, d6=1, d4=0):
+    def throw_dice(self, throws):
         
-        result_sum = 0
+        result_list = []
         
-        for throws in range(d6):
-            result = random.randrange(1,7)
-            print(result)
-            result_sum += result
-            print(result_sum)
-                
+        for throw in range(throws):
+            result = random.randrange(1, (self.sides +1))
+            
+            print('\nyou rolled a: ', result)
+            result_list.append(result)
+            time.sleep(1)
         
-        if d4 != 0:
-            
-            for throws in range(d4):
-                result = random.randrange(1,5)
-                print(result)
-                result_sum += result
-                print(result_sum)
-                
-        return result_sum
-            
-            
-#print(Dice().throw_dice(10))
+        print('you achieved a total result of: ', sum(result_list))
+        return result_list
+        
+
+class D6(Dice):
+    
+    def __init__(self):
+        
+        super(type(self))
+        self.sides = 6
+        
+        
+class D4(Dice):
+    
+    def __init__(self):
+        
+        super(type(self))
+        self.sides = 4
+        
+D6().throw_dice(3)
 
 # =============================================================================
 # 
@@ -297,20 +306,13 @@ class Card():
                 
                 setattr(player, self.atr, value)
                 
-'''try passing the player with the actual player class object from dict reference 
-created during player instanciation, not with its instance aka drizzt
-or use the Player().name class attribute
 
-also need that dict for player managment which needs to happen during instanciation pref 
-as a dict, where player name is the key the object is referenced'''
-
-
-deck = Deck()
-p1.draw_card(5)
-active_Card = p1.select_card_by_name()
-input_ = input('player name: >')
-active_Card.mod_player(p1); print(p1)
-
+#deck = Deck()
+#p1.draw_card(5)
+#active_Card = p1.select_card_by_name()
+#input_ = input('player name: >')
+#active_Card.mod_player(p1); print(p1)
+#p1.play_card()
 
 # =============================================================================
 # 
@@ -418,7 +420,7 @@ class Player():
         self.atr_tup       = ('Wit', 'Stren', 'Dex', 'Intel')
         self.atr_self_tup  = (self.Wit, self.Stren, self.Dex, self.Intel)
         self.track         = 0
-        self.tier_complete = 0
+        self.tier          = 1
         self.container     = Hand()
         self.hand_size     = self.container.container_size()
         self.card_playable = 'no'
@@ -444,10 +446,10 @@ class Player():
             if track in available_tracks:
                 break
         
-        available_tracks.remove(track)
-        self.track = track
-        
         board_dict_key = 'Track' + track
+        self.track = board_dict_key
+        
+        available_tracks.remove(track)
         print('those tracks are still available', available_tracks)
         print('you chose track number: ', track, board.dict_[board_dict_key])
     
@@ -464,35 +466,11 @@ class Player():
             print('you failed your check.')
             return False
 
-
-    def tile_check(self):
-        """lets player select the atr he wants to challenge in self.Track and self.tier;
-        if passsed applies lvl-up m/ to player."""
-        
-        tier = tile_dict['Tracks'][self.track][self.tier_complete]
-        
-        while True:
-            
-            print(tier)
-            atr = input('\nwhich atr to challange: ').capitalize()
-            
-            if atr not in tier:
-                print('\nno match, try agian..')
-            else:
-                print('\natrb choice accepted.')
-                break
-        
-        atr_int = getattr(self, atr).get_value()
-        
-        if self.test_attribute(atr_int, tier[atr]):
-            self.tier_complete += 1
-            print('\ngz, you are in tier', self.tier_complete,' now.')
-            self.level_up()
             
             
     def level_up(self):
         """after a succesfull self.tile_check() it allows the player to increase one
-        of his atris by +1 and increases self.tier_complete."""
+        of his atris by +1 and increases self.tier."""
         
         print('\nyour current stats:  Wit: {}  Stren: {}  Dex: {}  Intel: {}.'.format\
                                      (self.Wit, self.Stren, self.Dex, self.Intel))
@@ -505,9 +483,8 @@ class Player():
                 print('\nplease retype, couldnt understand your input.')
             
             else:
-                new_value = getattr(self, up).get_value() +1
-                setattr(self, up, new_value)
-                print(self)
+                value = getattr(self, up)
+                value.increase_value(1)
                 break
                 
        
@@ -620,23 +597,67 @@ class Player():
         graveyard.container.append(active_card)
         active_card.location = 'yard'
         
-        print('these are the availabel players: ', player_dict[:player_dict.no_of_players])
-        player = input('choose the player to target with {}: >'.format(active_card.name))
+        print('choose the player to target with {}: >'.format(active_card.name))
+        player = player_dict.select_player()
         active_card.mod_player(player)
         
-        print('SCHALALALALLALLALALALLALA')
+        print(player)
         
         
         
     def return_from_yard(self):
         pass
     
+
+    def tile_check(self):
+        """lets player select the atr he wants to challenge in self.Track and self.tier;
+        if passsed applies lvl-up m/ to player."""
+        
+        global tile_dict
+        challenge_tile = tile_dict[self.track][self.tier]
+        
+        while True:
             
+            print(challenge_tile)
+            atr = input('\nwhich atr to challange: ').capitalize()
+            
+            if atr not in challenge_tile:
+                print('\nno match, try agian..')
+            else:
+                print('\natrb choice accepted.')
+                break
+        
+        atr_int = getattr(self, atr).get_value()
+        
+        self.success_pool += D6().throw_dice(atr_int)
+        
+        if self.test_attribute(self.success_pool, challenge_tile[atr]):
+            self.tier        += 1
+            self.success_pool = 0
+            print('\ngz, you are in tier', self.tier,' now.')
+            self.level_up()
+            
+
+#p1.draw_card(5)
+#p1.play_card()
+
+#p1.track
+#print(graveyard)
+"""
 print(p1)
-p1.draw_card(1)
-p1.play_card()
+type(tile_dict)
 p1.select_track()
 p1.track
+p1.tile_check()
+p1.success_pool
+tile_dict['Track1'][1]
+
+To Solve:
+    success Pool doesnt consider from where it was accumulated...
+    print the successpool score in addition to the accumulated current dice thrown result_sum
+    
+    """
+
 
 # =============================================================================
 # 
@@ -655,9 +676,11 @@ class PMS():
             if k in acceptable_kwargs:
                 setattr(self, k, kwargs[k])
         
-        self.no_of_players = self.init_pms()
-        self.player_dict   = self.create_player()
-        self.player_list   = self.create_player_list()
+        self.no_of_players     = self.init_pms()
+        self.player_dict       = self.create_player()
+        self.player_dict_dummy = self.create_dummies()
+        self.player_list       = self.create_player_list()
+        self.player_list_dummy = self.create_player_list_dummies()
         
         
     def __str__(self):
@@ -696,34 +719,49 @@ class PMS():
             
             for i in range(self.no_of_players):
                 name = input('name your player: >')
-                players[name] = Player(name, 'can kill stuff', Wit(20), Stren(5), Dex(5), Intel(5))
+                players[name] = Player(name, 'can kill stuff', Wit(1), Stren(1), Dex(1), Intel(1))
             
         else:
             for name in self.name:
-                players[name] = Player(name, 'can kill stuff', Wit(20), Stren(5), Dex(5), Intel(5))
+                players[name] = Player(name, 'can kill stuff', Wit(1), Stren(1), Dex(1), Intel(1))
             
-        
-        if len(players) < 6:
-            for dummy_players in range(len(players), 5):
-                name = 'dummy' + str(dummy_players + 1)
-                players[name] = Player(name, 'im not here, really', Wit(0), Stren(0), Dex(0), Intel(0))
-    
         return players
+    
+    
+    def create_dummies(self):
+        
+        player_dict = dict(self.player_dict)
+        
+        if len(self.player_dict) < 6:
+            
+            for dummy_players in range(len(self.player_dict), 5):
+                name = 'dummy' + str(dummy_players + 1)
+                player_dict[name] = Player(name, 'im not here, really', Wit(0), Stren(0), Dex(0), Intel(0))
+                
+        return player_dict
     
     
     def create_player_list(self):
         
         player_list = []
-        max_player = 5
         
         for i in self.player_dict.keys():
             
             player_list.append(i)
             
-        player_list = (player_list + max_player * [None])[:max_player]
-        
         return player_list
         
+    
+    def create_player_list_dummies(self):
+        
+        player_list = []
+        
+        for i in self.player_dict_dummy.keys():
+            
+            player_list.append(i)
+            
+        return player_list
+    
     
     def show_players(self):
         
@@ -731,13 +769,35 @@ class PMS():
             print(self.player_dict[name])
             
     
+    def select_player(self, **kwargs):
+        
+        name = ''
+        if kwargs == False:
+            while True:
+                print(self.player_list)
+                name = input('pick a name: >')
+                
+                if name in self.player_list:
+                    break
+            
+            return self.player_dict[name]
+        
+        else:
+            print('else clause is talking now')
+        
+        
     
             
             
-
+      
 player_dict = PMS(number=2, name = ['frank', 'tank']); print(player_dict)
-player_dict.player_list
-player_dict.show_players()
+#player_dict.player_list
+#player_dict.show_players()
+#player_dict.select_player()
+#print(player_dict.player_dict_dummy)
+#print(player_dict.player_list_dummy)
+#print(player_dict.player_dict.keys())
+#player_dict.player_dict['frank']
 
 #player_dict = PMS().create_player()
 #print(player_dict.no_of_players)
@@ -763,13 +823,13 @@ player_dict.show_players()
 def bind_players_to_vars():
     """Binds all active players to vars: p1 - p5 to access the player instances."""
     
-    for player in player_dict.player_list:
+    for player in player_dict.player_list_dummy:
         
-        yield player_dict.player_dict[player]
+        yield player_dict.player_dict_dummy[player]
             
         
 p1, p2, p3, p4, p5 = bind_players_to_vars()
-print(p1.Dex)
+print(p3.Dex)
 
 
 # =============================================================================
