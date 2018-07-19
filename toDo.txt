@@ -9,9 +9,9 @@ option to pass playing cards:		yield turn
 
 
 dice pool:
-needs the pool for each atr:		no of d6/d4/exploding
-needs accumulated successes for chal:	builds up till challange complet, resets afterwards
-need to change test tile for dice:	implement the dice version over static buffs
+yes | needs the pool for each atr:		no of d6/d4/exploding
+yes | needs accumulated successes for chal:	builds up till challange complet, resets afterwards
+yes | need to change test tile for dice:	implement the dice version over static buffs
 
 
 player stats:
@@ -32,7 +32,7 @@ turn cycle:
 
 challange options: preferrence to B, implement A) first, easier but has pool already
 
-A):
+yes | A):
 	fixed tile value to beat with sum of all dice thrown, success pool
 
 B):

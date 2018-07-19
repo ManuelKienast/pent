@@ -28,10 +28,11 @@ available_tracks = ['1', '2', '3', '4', '5']
 
 # =============================================================================
 # 
-# aBout the Board:
+# about a BOARD:
 # =============================================================================
 
 class Board:
+    """ the board class, builds the playing field w/ all tracks. """
     
     def __init__(self, length, min_val, max_val):
         
@@ -70,6 +71,7 @@ class Board:
             self.Intel =  None
      
     
+    
     def __str__(self):
         
         string = ''
@@ -80,6 +82,7 @@ class Board:
         
     
     def create_tile(self, min_val, max_val):
+        """ selects 2 random atributes for the tile and sets its min_val and max_val."""
         
         pos = ['Wit', 'Stren', 'Dex', 'Intel']
         pos = random.sample(pos, 2)
@@ -90,6 +93,7 @@ class Board:
 
     
     def build_track(self):
+        """ builds a track of tiles, incrementing the min & max vals. """
         
         tile_dict = {}
         var_min = self.min_val
@@ -114,7 +118,7 @@ print(td.dict_)
 
 # =============================================================================
 # 
-# concerning Attributes:
+# concerning ATTRIBUTES:
 # =============================================================================
 
 class Attribute:
@@ -206,12 +210,13 @@ class Intel(Attribute):
 
 # =============================================================================
 # 
-# die würfel sind gefallen:
+# die WWÜRFEL sind gefallen:
 # =============================================================================
 
 class Dice():
+    """ the dice class w/ rolling dice functinality. """
     
-    
+   
     def throw_dice(self, throws):
         
         result_list = []
@@ -228,25 +233,27 @@ class Dice():
         
 
 class D6(Dice):
+    """ the D6 entity. """
     
     def __init__(self):
-        
-        super(type(self))
+        super().__init__()
+        #super(type(self))
         self.sides = 6
         
         
 class D4(Dice):
+    """ the D4 entity. """
     
     def __init__(self):
-        
-        super(type(self))
+        super().__init__()
+        #super(type(self))
         self.sides = 4
         
-D6().throw_dice(3)
+#D6().throw_dice(3)
 
 # =============================================================================
 # 
-# just read the fucking card:
+# just read the fucking CARD:
 # =============================================================================
 
 class Card():
@@ -316,15 +323,17 @@ class Card():
 
 # =============================================================================
 # 
-# all the cards are in contianers:
+# all the cards are in CONTAINERs:
 # =============================================================================
 
 class Card_container:
+    """ base class of card container with functionalities. """
     
     def __init__(self):
         self.name      = 'base_container'
         self.size      = self.container_size()
         self.container = []
+    
     
     
     def __str__(self):
@@ -338,6 +347,7 @@ class Card_container:
     
     
     def initialize_container(self):
+        """ populates the containers, for deck loads abd reads the card file. """
         
         if self.name == 'deck':
         
@@ -365,6 +375,7 @@ class Card_container:
     
     
     def container_size(self):
+        """ counts the cards in the container. """
         
         if self.container:
             return len(self.container)
@@ -373,6 +384,7 @@ class Card_container:
 
 
 class Deck(Card_container):
+    """ sets the deck card container. """
     
     def __init__(self):
         
@@ -383,6 +395,7 @@ class Deck(Card_container):
         
 
 class Hand(Card_container):
+    """ sets the players hand card-container. """
     
     def __init__(self):
         
@@ -393,6 +406,7 @@ class Hand(Card_container):
         
 
 class Graveyard(Card_container):
+    """ sets the graveyard card container. """
     
     def __init__(self):
         
@@ -404,7 +418,7 @@ class Graveyard(Card_container):
 
 # =============================================================================
 #     
-# playing with the Player:
+# playing with the PLAYER:
 # =============================================================================
 
 class Player():
@@ -426,7 +440,10 @@ class Player():
         self.card_playable = 'no'
         self.active_turn   = 'no'
         self.success_pool  = 0
+        self.atr_challange = False
+        self.tile_checked  = False
        
+    
     
     def __str__(self):
         return "\nPlayer Name: {} \n{}'s Wit  : {} \n{}'s Stren: {} \n{}'s Dex  : {}\
@@ -436,6 +453,7 @@ class Player():
     
     
     def select_track(self):
+        """ sets the track a player will be playing on. """
         
         for count, track in enumerate(board.dict_, 1):
             if str(count) in available_tracks:
@@ -489,6 +507,7 @@ class Player():
                 
        
     def show_hand(self):
+        """ prints the hand of player. """
         
         if self.container.container_size():
             print('\nThis is your current hand:\n', self.container.__str__())
@@ -527,6 +546,7 @@ class Player():
     
     
     def draw_card(self, amount):
+        """draws an amount of cards from the deck. """
         
         i = 0
         while i < amount:
@@ -587,6 +607,7 @@ class Player():
     
     
     def play_card(self):
+        """ play card from hand after selecting card and target player. """
         
         hand = self.container.container
         
@@ -602,7 +623,6 @@ class Player():
         active_card.mod_player(player)
         
         print(player)
-        
         
         
     def return_from_yard(self):
@@ -629,7 +649,15 @@ class Player():
         
         atr_int = getattr(self, atr).get_value()
         
-        self.success_pool += D6().throw_dice(atr_int)
+        if self.success_pool and not atr == self.atr_challange:
+            self.success_pool = 0
+        
+        self.atr_challange = atr
+        
+        for i in D6().throw_dice(atr_int):
+            self.success_pool += i 
+            
+        print('this go around you accumulated', self.success_pool, 'points')
         
         if self.test_attribute(self.success_pool, challenge_tile[atr]):
             self.tier        += 1
@@ -637,13 +665,16 @@ class Player():
             print('\ngz, you are in tier', self.tier,' now.')
             self.level_up()
             
+        self.tile_checked = True
+            
 
 #p1.draw_card(5)
 #p1.play_card()
 
 #p1.track
 #print(graveyard)
-"""
+
+'''
 print(p1)
 type(tile_dict)
 p1.select_track()
@@ -652,19 +683,121 @@ p1.tile_check()
 p1.success_pool
 tile_dict['Track1'][1]
 
-To Solve:
-    success Pool doesnt consider from where it was accumulated...
-    print the successpool score in addition to the accumulated current dice thrown result_sum
-    
-    """
+'''
 
 
 # =============================================================================
 # 
-# about the Players -- managing the beast:
+# time walking - the story about TURNS:
+# =============================================================================
+
+class Turn:
+    
+    def __init__(self):
+        
+        self.turn_no         = 0
+        self.player_active   = ''
+        self.player_position = -1
+        self.card_turn       = False
+    
+    
+    
+    def loop_player_list(self):
+        """ loops trough all active players, resets to [0] if end is reached."""
+        
+        if self.player_position < player_dict.no_of_players -1:
+            self.player_position += 1
+            
+        else:
+            self.player_position = 0
+    
+    
+    def turn_start(self):
+        """ starts the turn by selecting the active player. """
+        
+        if not self.player_active:
+            self.player_active = player_dict.player_class_list[0]
+            self.player_position = 0
+            
+        self.turn_options()
+            
+    
+    def turn_end(self):
+        """ implements end of turn behavior, activating the next active player, dicarading cards etc.."""
+        
+        self.loop_player_list()
+            
+        self.player_active = player_dict.player_class_list[self.player_position]
+        
+        
+    def turn_options(self):
+        
+        
+        allowed_cmds = ('1', '2', '3', '4')
+        turn_menu = '\nHey ' + self.player_active['name'] + """It's your turn now.
+        You can:
+            1: Activate your sepcial abilities.
+            2: Play cards from your hand.
+            3: Make your challange attempt.
+            4: End your turn.
+            
+            Choose number 1-4: >"""
+            
+        while True:
+            input_ = input(turn_menu)
+            
+            if input_ in allowed_cmds:
+                break
+            else:
+                print('You need to choose a number: 1-4. plz repeat.')
+        
+        
+        if input_ == 1:
+            
+        
+            self.turn_options()
+            
+            
+        if input_ == 2:
+            
+            if self.player_active.container.container_size() <= 0:
+                print('you currently can\'t play any cards, you jave none.')
+            else:
+                self.player_active.play_card()
+                
+            self.turn_options()
+            
+            
+        if input_ == 3:
+            
+            if self.player_active.tile_checked == True:
+                print('you already tried it this turn. Don\'t try to cheat.')
+            else:
+                self.player_active.tile_check()
+            
+            self.turn_options()
+            
+            
+        if input_ == 4:
+            self.turn_end()
+    
+    
+    def turn_play_cards(self):
+        pass    
+        
+turn = Turn()
+turn.turn_start()
+print(turn.player_active)
+turn.turn_end()  
+print(turn.player_active)
+    
+# =============================================================================
+# 
+# about the Players -- MANAGING the beast:
 # =============================================================================
 
 class PMS():
+    """ player managment system, keeps a record of all players and their turn order. """
     
     def __init__(self, **kwargs):
         
@@ -679,10 +812,12 @@ class PMS():
         self.no_of_players     = self.init_pms()
         self.player_dict       = self.create_player()
         self.player_dict_dummy = self.create_dummies()
+        self.player_class_list = self.create_player_class_list()
         self.player_list       = self.create_player_list()
         self.player_list_dummy = self.create_player_list_dummies()
+         
         
-        
+    
     def __str__(self):
         
         players = ''
@@ -693,6 +828,7 @@ class PMS():
     
     
     def init_pms(self):
+        """ sets the number of participating players --> input. """
         
         if not self.number:
             
@@ -712,6 +848,7 @@ class PMS():
             
             
     def create_player(self):
+        """ creates the player instances for all participating players. """
         
         players = {}
         
@@ -729,6 +866,7 @@ class PMS():
     
     
     def create_dummies(self):
+        """ creates the dummy versions for 5 - actual players. """
         
         player_dict = dict(self.player_dict)
         
@@ -741,7 +879,18 @@ class PMS():
         return player_dict
     
     
+    def create_player_class_list(self):
+        
+        player_class_list = []
+        
+        for player in self.player_dict.keys():
+            player_class_list.append(self.player_dict[player])
+            
+        return player_class_list
+    
+    
     def create_player_list(self):
+        """ creates the list of all actual players. """
         
         player_list = []
         
@@ -753,6 +902,7 @@ class PMS():
         
     
     def create_player_list_dummies(self):
+        """ creates the dummy list filled up to 5 in additon to the actual players. """
         
         player_list = []
         
@@ -764,15 +914,19 @@ class PMS():
     
     
     def show_players(self):
+        """ returns all actual participating players. """
         
         for name in self.player_dict:
             print(self.player_dict[name])
             
     
     def select_player(self, **kwargs):
+        """ enables selection of active player. """
         
         name = ''
-        if kwargs == False:
+        kwargs = kwargs
+        
+        if not kwargs:
             while True:
                 print(self.player_list)
                 name = input('pick a name: >')
@@ -783,14 +937,18 @@ class PMS():
             return self.player_dict[name]
         
         else:
-            print('else clause is talking now')
-        
-        
+            for name in kwargs['name']:
+                yield self.player_dict[name]
+                
+                
+                
     
-            
-            
-      
+        
+        
 player_dict = PMS(number=2, name = ['frank', 'tank']); print(player_dict)
+player_dict.select_player(name=['tank','frank'])
+
+
 #player_dict.player_list
 #player_dict.show_players()
 #player_dict.select_player()
@@ -820,16 +978,9 @@ player_dict = PMS(number=2, name = ['frank', 'tank']); print(player_dict)
 # all you need is functions to run:
 # =============================================================================
 
-def bind_players_to_vars():
-    """Binds all active players to vars: p1 - p5 to access the player instances."""
-    
-    for player in player_dict.player_list_dummy:
-        
-        yield player_dict.player_dict_dummy[player]
-            
-        
-p1, p2, p3, p4, p5 = bind_players_to_vars()
-print(p3.Dex)
+
+
+
 
 
 # =============================================================================
