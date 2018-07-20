@@ -609,22 +609,40 @@ class Player():
     def play_card(self):
         """ play card from hand after selecting card and target player. """
         
-        hand = self.container.container
         
-        self.show_hand()
-        active_card = self.select_card_by_name()
+        if self.container.container:
+            hand = self.container.container
+            
+            self.show_hand()
+            active_card = self.select_card_by_name()
+            
+            hand.remove(active_card)
+            graveyard.container.append(active_card)
+            active_card.location = 'yard'
+            
+            print('choose the player to target with {}: >'.format(active_card.name))
+            player = player_dict.select_player()
+            active_card.mod_player(player)
+            
+            print(player)
+            
+            while True:
+                allowed_cmds_play_card = ('Yes', 'No')
+                input_ = input('Do you want to play another card? Yes or No: >').capitalize()
+                if input_ in allowed_cmds_play_card:
+                    break
+                else:
+                    print('I dont understand your input, plz repeat.')
+                
+            if input_ == 'Yes':
+                self.play_card()
+            else:
+                print('will be asking other players if they want to respond..')
         
-        hand.remove(active_card)
-        graveyard.container.append(active_card)
-        active_card.location = 'yard'
-        
-        print('choose the player to target with {}: >'.format(active_card.name))
-        player = player_dict.select_player()
-        active_card.mod_player(player)
-        
-        print(player)
-        
-        
+        else:
+            print('You dont have any cards to play..')
+    
+    
     def return_from_yard(self):
         pass
     
@@ -686,111 +704,7 @@ tile_dict['Track1'][1]
 '''
 
 
-# =============================================================================
-# 
-# time walking - the story about TURNS:
-# =============================================================================
 
-class Turn:
-    
-    def __init__(self):
-        
-        self.turn_no         = 0
-        self.player_active   = ''
-        self.player_position = -1
-        self.card_turn       = False
-    
-    
-    
-    def loop_player_list(self):
-        """ loops trough all active players, resets to [0] if end is reached."""
-        
-        if self.player_position < player_dict.no_of_players -1:
-            self.player_position += 1
-            
-        else:
-            self.player_position = 0
-    
-    
-    def turn_start(self):
-        """ starts the turn by selecting the active player. """
-        
-        if not self.player_active:
-            self.player_active = player_dict.player_class_list[0]
-            self.player_position = 0
-            
-        self.turn_options()
-            
-    
-    def turn_end(self):
-        """ implements end of turn behavior, activating the next active player, dicarading cards etc.."""
-        
-        self.loop_player_list()
-            
-        self.player_active = player_dict.player_class_list[self.player_position]
-        
-        
-    def turn_options(self):
-        
-        
-        allowed_cmds = ('1', '2', '3', '4')
-        turn_menu = '\nHey ' + self.player_active['name'] + """It's your turn now.
-        You can:
-            1: Activate your sepcial abilities.
-            2: Play cards from your hand.
-            3: Make your challange attempt.
-            4: End your turn.
-            
-            Choose number 1-4: >"""
-            
-        while True:
-            input_ = input(turn_menu)
-            
-            if input_ in allowed_cmds:
-                break
-            else:
-                print('You need to choose a number: 1-4. plz repeat.')
-        
-        
-        if input_ == 1:
-            
-        
-            self.turn_options()
-            
-            
-        if input_ == 2:
-            
-            if self.player_active.container.container_size() <= 0:
-                print('you currently can\'t play any cards, you jave none.')
-            else:
-                self.player_active.play_card()
-                
-            self.turn_options()
-            
-            
-        if input_ == 3:
-            
-            if self.player_active.tile_checked == True:
-                print('you already tried it this turn. Don\'t try to cheat.')
-            else:
-                self.player_active.tile_check()
-            
-            self.turn_options()
-            
-            
-        if input_ == 4:
-            self.turn_end()
-    
-    
-    def turn_play_cards(self):
-        pass    
-        
-turn = Turn()
-turn.turn_start()
-print(turn.player_active)
-turn.turn_end()  
-print(turn.player_active)
-    
 # =============================================================================
 # 
 # about the Players -- MANAGING the beast:
@@ -971,7 +885,137 @@ player_dict.select_player(name=['tank','frank'])
 #p = getattr(player_dict, 'player_dict')
 #print(p['hank'])
 
+# =============================================================================
+# 
+# time walking - the story about TURNS:
+# =============================================================================
 
+class Turn:
+    
+    def __init__(self):
+        
+        self.turn_no         = 0
+        self.player_active   = ''
+        self.player_position = -1
+        self.card_turn       = False
+    
+    
+    
+    def init_game(self):
+        pass
+        
+    
+    
+    def loop_player_list(self):
+        """ loops trough all active players, resets to [0] if end is reached."""
+        
+        if self.player_position < player_dict.no_of_players -1:
+            self.player_position += 1
+            
+        else:
+            self.player_position = 0
+    
+    
+    def turn_play_cards(self):
+        pass #build the list of players on turn, ask to play card if yes call player play card
+    
+    
+    def turn_start(self):
+        """ starts the turn by selecting the active player. """
+        
+        if not self.player_active:
+            self.player_active = player_dict.player_class_list[0]
+            self.player_position = 0
+            
+        setattr(self.player_active, active_turn, 'yes')
+        setattr(self.player_active, tile_checked, False)
+        self.player_active.draw_card((4 - self.player_active.container.container_size()))
+        
+        self.turn_options()
+            
+    
+    def turn_end(self):
+        """ implements end of turn behavior, activating the next active player, dicarading cards etc.."""
+        
+        self.loop_player_list()
+            
+        self.player_active = player_dict.player_class_list[self.player_position]
+        
+        self.turn_start()
+        
+        
+    def end_game(self):
+        """ Ends all """
+        print('Until the next time, bye.')
+        break
+        
+        
+    def turn_options(self):
+        """ the main menu, keeps the turn functionalities. """
+        
+        allowed_cmds = ('1', '2', '3', '4', 'x', 'Q')
+        turn_menu = '\nHey ' + self.player_active['name'] + """It's your turn now.
+        You can:
+            1: Activate your sepcial abilities.
+            2: Play cards from your hand.
+            3: Make your challange attempt.
+            4: End your turn.
+            
+            x, Q : End the whole game.
+            
+            Choose number 1-4 - x,Q(to end all): >"""
+            
+        while True:
+            input_ = input(turn_menu)
+            
+            if input_ in allowed_cmds:
+                break
+            else:
+                print('You need to choose a number: 1-4. plz repeat.')
+        
+        
+        if input_ == 1:
+            
+            self.turn_options()
+            
+            
+        if input_ == 2:
+            
+            if self.player_active.container.container_size() <= 0:
+                print('you currently can\'t play any cards, you have none.')
+            else:
+                self.player_active.play_card()
+                
+            self.turn_options()
+            
+            
+        if input_ == 3:
+            
+            if self.player_active.tile_checked == True:
+                print('you already tried it this turn. Don\'t try to cheat.')
+            else:
+                self.player_active.tile_check()
+            
+            self.turn_options()
+            
+            
+        if input_ == 4:
+            self.turn_end()
+            
+            
+        if input_ == 'x' or inpuot_ == 'Q'
+        
+    
+    
+    
+    
+        
+turn = Turn()
+turn.turn_start()
+print(turn.player_active)
+turn.turn_end()  
+print(turn.player_active)
+    
 
 # =============================================================================
 # 
