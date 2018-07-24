@@ -23,7 +23,7 @@ print(random.getrandbits(5))
 # =============================================================================
 
 # list of still available tracks:
-available_tracks = ['1', '2', '3', '4', '5']
+
 
 
 # =============================================================================
@@ -114,7 +114,6 @@ td = Board(10,1,4)
 print(td.dict_)
 
 """
-
 
 # =============================================================================
 # 
@@ -248,8 +247,10 @@ class D4(Dice):
         super().__init__()
         #super(type(self))
         self.sides = 4
-        
-#D6().throw_dice(3)
+
+'''        
+D6().throw_dice(3)
+'''
 
 # =============================================================================
 # 
@@ -313,13 +314,14 @@ class Card():
                 
                 setattr(player, self.atr, value)
                 
-
-#deck = Deck()
-#p1.draw_card(5)
-#active_Card = p1.select_card_by_name()
-#input_ = input('player name: >')
-#active_Card.mod_player(p1); print(p1)
-#p1.play_card()
+'''
+deck = Deck()
+p1.draw_card(5)
+active_Card = p1.select_card_by_name()
+input_ = input('player name: >')
+active_Card.mod_player(p1); print(p1)
+p1.play_card()
+'''
 
 # =============================================================================
 # 
@@ -538,7 +540,7 @@ class Player():
                     
                 else:
                     print('\ncant find your selection, plz enter the name again.')
-                    continue
+                    
             
             active_card = hand[active_card_index]
             print(active_card)
@@ -613,7 +615,6 @@ class Player():
         if self.container.container:
             hand = self.container.container
             
-            self.show_hand()
             active_card = self.select_card_by_name()
             
             hand.remove(active_card)
@@ -684,13 +685,6 @@ class Player():
             self.level_up()
             
         self.tile_checked = True
-            
-
-#p1.draw_card(5)
-#p1.play_card()
-
-#p1.track
-#print(graveyard)
 
 '''
 print(p1)
@@ -700,10 +694,7 @@ p1.track
 p1.tile_check()
 p1.success_pool
 tile_dict['Track1'][1]
-
 '''
-
-
 
 # =============================================================================
 # 
@@ -713,15 +704,15 @@ tile_dict['Track1'][1]
 class PMS():
     """ player managment system, keeps a record of all players and their turn order. """
     
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs_PMS):
         
         self.number        = False
         self.name          = []
         
         acceptable_kwargs = ['number', 'name']
-        for k in kwargs.keys():
+        for k in kwargs_PMS.keys():
             if k in acceptable_kwargs:
-                setattr(self, k, kwargs[k])
+                setattr(self, k, kwargs_PMS[k])
         
         self.no_of_players     = self.init_pms()
         self.player_dict       = self.create_player()
@@ -834,13 +825,15 @@ class PMS():
             print(self.player_dict[name])
             
     
-    def select_player(self, **kwargs):
+    def select_player(self, **kwargs_select_player):
         """ enables selection of active player. """
         
         name = ''
-        kwargs = kwargs
+        print(type(kwargs_select_player))
+        print(kwargs_select_player.items())
+        print('läuft?????????')
         
-        if not kwargs:
+        if kwargs_select_player.keys():
             while True:
                 print(self.player_list)
                 name = input('pick a name: >')
@@ -851,39 +844,17 @@ class PMS():
             return self.player_dict[name]
         
         else:
-            for name in kwargs['name']:
+            print('läuft?????????')
+            for name in kwargs_select_player.values():
                 yield self.player_dict[name]
                 
-                
-                
-    
         
-        
+'''
 player_dict = PMS(number=2, name = ['frank', 'tank']); print(player_dict)
 player_dict.select_player(name=['tank','frank'])
 
 player_dict.player_dict['frank'].active_turn
-#player_dict.player_list
-#player_dict.show_players()
-#player_dict.select_player()
-#print(player_dict.player_dict_dummy)
-#print(player_dict.player_list_dummy)
-#print(player_dict.player_dict.keys())
-#player_dict.player_dict['frank']
-
-#player_dict = PMS().create_player()
-#print(player_dict.no_of_players)
-#print(player_dict)
-#print(player_dict.player_list)
-#player_dict.show_players()
-#player_dict.create_player()
-#print(player_dict)
-#player_dict
-#print(player_dict)
-#player_dict.show_players()
-#type(player_dict)
-#p = getattr(player_dict, 'player_dict')
-#print(p['hank'])
+'''
 
 # =============================================================================
 # 
@@ -929,7 +900,7 @@ class Turn:
             self.player_active.draw_card((4 - self.player_active.container.container_size()))
         except TypeError:
             self.player_active.draw_card(4)
-        
+            
         self.turn_options()
             
     
@@ -943,6 +914,7 @@ class Turn:
         self.turn_start()
         
         
+        
     def end_game(self):
         """ Ends all """
         print('Until the next time, bye.')
@@ -953,11 +925,11 @@ class Turn:
         """ the main menu, keeps the turn functionalities. """
         
         allowed_cmds = ('1', '2', '3', '4', 'x', 'Q')
-        turn_menu = '\nHey ' + self.player_active.name + """\nIt's your turn now.
+        turn_menu = '\nHey ' + self.player_active.name + """:\nIt's your turn now.
         You can:
             1: Activate your sepcial abilities.
             2: Play cards from your hand.
-            3: Make your challange attempt.
+            3: Make your challenge attempt.
             4: End your turn.
             
             x, Q : End the whole game.
@@ -972,62 +944,69 @@ class Turn:
             else:
                 print('You need to choose a number: 1-4. plz repeat.')
         
-        
-        if input_ == 1:
-            
+        # special ability
+        if input_ == '1':
             self.turn_options()
             
-            
-        if input_ == 2:
-            
+        # play cards    
+        if input_ == '2':
             if self.player_active.container.container_size() <= 0:
                 print('you currently can\'t play any cards, you have none.')
             else:
                 self.player_active.play_card()
-                
+            
             self.turn_options()
             
-            
-        if input_ == 3:
-            
+        # challenge attempt            
+        if input_ == '3':
             if self.player_active.tile_checked == True:
                 print('you already tried it this turn. Don\'t try to cheat.')
             else:
                 self.player_active.tile_check()
             
-            self.turn_options()
-            
-            
-        if input_ == 4:
+        # end turn    
+        if input_ == '4':
             self.turn_end()
             
-            
+        # end game    
         if input_ == 'x' or input_ == 'Q':
             print('until the next time.')
             self.end_game()
         
-    
-    
-    
-    
-        
+'''     
 turn = Turn()
-#turn.player_active.name
 turn.turn_start()
 print(turn.player_active)
 turn.turn_end()  
 print(turn.player_active)
-    
+print(player_dict)
+'''
 
 # =============================================================================
 # 
-# all you need is functions to run:
+# GAME on:
 # =============================================================================
 
-
-
-
-
+class Game:
+    """ putting it all together, impementing the final logic."""
+    
+    def __init__(self):
+        self.name = 'im game'
+        self.board = Board(10, 1, 4)
+        self.player_dict = PMS(number=2, name = ['frank', 'tank']); print(player_dict)
+        self.deck = Deck()
+        self.graveyard = Graveyard()
+        self.turn = Turn()
+    
+    global board, player_dict, deck, graveyard
+    
+#    board = Board(10, 1, 4)
+#    #player_dict = PMS()
+#    player_dict = PMS(number=2, name = ['frank', 'tank']); print(player_dict)
+#    deck = Deck()
+#    graveyard = Graveyard()
+#    turn = Turn()
+    
 
 # =============================================================================
 #     
@@ -1036,13 +1015,29 @@ print(turn.player_active)
 
 if __name__ == '__main__':
     
-    graveyard = Graveyard()
-    deck = Deck()
-    print(deck)
+    available_tracks = ['1', '2', '3', '4', '5']
     board = Board(10, 1, 4)
-    tile_dict = Board(10, 1, 4).dict_
+    tile_dict = board.dict_
+    player_dict = PMS(number=2, name = ['frank', 'tank']); print(player_dict)
+    deck = Deck()
+    graveyard = Graveyard()
+    turn = Turn()
+    
+    turn.turn_start()
+    
+    
+#print(board.)
+#print(player_dict.player_dict['tank'])
+#print(deck)    
+#
+def test(**kwargs):
+    
+    if not kwargs.keys():
+        print(kwargs.items())
+    else:
+        print('nothing')
+        
+test()
     
     
     
-    
- 

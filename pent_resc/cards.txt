@@ -1,5 +1,35 @@
-stren, adds +10 to your strength, Stren, 10, True
-dex, adds +10 to your dexterity, Dex, 10, True
-int, adds +10 to your intelligence, Intel, 10, True
-wis, adds +10 to your wisdom, Wit, 10, True
-neg, -10 to your dex, Dex, -10, True
+stren, adds +1 to your strength, Stren, 1, True
+dex, adds +1 to your dexterity, Dex, 1, True
+int, adds +1 to your intelligence, Intel, 1, True
+wis, adds +1 to your wisdom, Wit, 1, True
+neg, -1 to your dex, Dex, -1, True
+stren, adds +1 to your strength, Stren, 1, True
+dex, adds +1 to your dexterity, Dex, 1, True
+int, adds +1 to your intelligence, Intel, 1, True
+wis, adds +1 to your wisdom, Wit, 1, True
+neg, -1 to your dex, Dex, -1, True
+stren, adds +1 to your strength, Stren, 1, True
+dex, adds +1 to your dexterity, Dex, 1, True
+int, adds +1 to your intelligence, Intel, 1, True
+wis, adds +1 to your wisdom, Wit, 1, True
+neg, -1 to your dex, Dex, -1, True
+stren, adds +1 to your strength, Stren, 1, True
+dex, adds +1 to your dexterity, Dex, 1, True
+int, adds +1 to your intelligence, Intel, 1, True
+wis, adds +1 to your wisdom, Wit, 1, True
+neg, -1 to your dex, Dex, -1, True
+stren, adds +1 to your strength, Stren, 1, True
+dex, adds +1 to your dexterity, Dex, 1, True
+int, adds +1 to your intelligence, Intel, 1, True
+wis, adds +1 to your wisdom, Wit, 1, True
+neg, -1 to your dex, Dex, -1, True
+stren, adds +1 to your strength, Stren, 1, True
+dex, adds +1 to your dexterity, Dex, 1, True
+int, adds +1 to your intelligence, Intel, 1, True
+wis, adds +1 to your wisdom, Wit, 1, True
+neg, -1 to your dex, Dex, -1, True
+stren, adds +1 to your strength, Stren, 1, True
+dex, adds +1 to your dexterity, Dex, 1, True
+int, adds +1 to your intelligence, Intel, 1, True
+wis, adds +1 to your wisdom, Wit, 1, True
+neg, -1 to your dex, Dex, -1, True
