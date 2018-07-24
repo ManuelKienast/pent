@@ -109,7 +109,7 @@ class Board:
         return tile_dict
 
 """        
-print(board)
+print(td)
 td = Board(10,1,4)
 print(td.dict_)
 
@@ -862,7 +862,7 @@ class PMS():
 player_dict = PMS(number=2, name = ['frank', 'tank']); print(player_dict)
 player_dict.select_player(name=['tank','frank'])
 
-
+player_dict.player_dict['frank'].active_turn
 #player_dict.player_list
 #player_dict.show_players()
 #player_dict.select_player()
@@ -899,12 +899,7 @@ class Turn:
         self.player_position = -1
         self.card_turn       = False
     
-    
-    
-    def init_game(self):
-        pass
-        
-    
+
     
     def loop_player_list(self):
         """ loops trough all active players, resets to [0] if end is reached."""
@@ -927,9 +922,13 @@ class Turn:
             self.player_active = player_dict.player_class_list[0]
             self.player_position = 0
             
-        setattr(self.player_active, active_turn, 'yes')
-        setattr(self.player_active, tile_checked, False)
-        self.player_active.draw_card((4 - self.player_active.container.container_size()))
+        self.player_active.active_turn = 'yes'
+        self.player_active.tile_checked = False
+        
+        try:
+            self.player_active.draw_card((4 - self.player_active.container.container_size()))
+        except TypeError:
+            self.player_active.draw_card(4)
         
         self.turn_options()
             
@@ -947,14 +946,14 @@ class Turn:
     def end_game(self):
         """ Ends all """
         print('Until the next time, bye.')
-        break
+        
         
         
     def turn_options(self):
         """ the main menu, keeps the turn functionalities. """
         
         allowed_cmds = ('1', '2', '3', '4', 'x', 'Q')
-        turn_menu = '\nHey ' + self.player_active['name'] + """It's your turn now.
+        turn_menu = '\nHey ' + self.player_active.name + """\nIt's your turn now.
         You can:
             1: Activate your sepcial abilities.
             2: Play cards from your hand.
@@ -1003,7 +1002,9 @@ class Turn:
             self.turn_end()
             
             
-        if input_ == 'x' or inpuot_ == 'Q'
+        if input_ == 'x' or input_ == 'Q':
+            print('until the next time.')
+            self.end_game()
         
     
     
@@ -1011,6 +1012,7 @@ class Turn:
     
         
 turn = Turn()
+#turn.player_active.name
 turn.turn_start()
 print(turn.player_active)
 turn.turn_end()  
