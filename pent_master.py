@@ -435,7 +435,7 @@ class Player():
         self.Intel         = Intel
         self.atr_tup       = ('Wit', 'Stren', 'Dex', 'Intel')
         self.atr_self_tup  = (self.Wit, self.Stren, self.Dex, self.Intel)
-        self.track         = 0
+        self.track         = self.select_track()
         self.tier          = 1
         self.container     = Hand()
         self.hand_size     = self.container.container_size()
@@ -457,23 +457,31 @@ class Player():
     def select_track(self):
         """ sets the track a player will be playing on. """
         
-        for count, track in enumerate(board.dict_, 1):
-            if str(count) in available_tracks:
-                print('\n', track, ':\n', board.dict_[track])
+        if player_dict.no_of_players + len(available_tracks) > 5:
+            
+            print('\n\n Hej,', self.name, '\n You can choose one of the following tracks: ')
         
-        while True:
-            track = input('Choose the track you want to challenge. Give me a number 1-5: >')
-            if track in available_tracks:
-                break
+            for count, track in enumerate(board.dict_, 1):
+                if str(count) in available_tracks:
+                    print(' \n', track, ':\n', board.dict_[track])
+            
+            while True:
+                track = input('Choose the track you want to challenge. Give me a number 1-5: >')
+                if track in available_tracks:
+                    break
+            
+            available_tracks.remove(track)
+            board_dict_key = 'Track' + track
+            print('you chose track number: ', track, board.dict_[board_dict_key])
+            
+            
+        else:
+            track = available_tracks.pop(0)
+            board_dict_key = 'Track' + track    
         
-        board_dict_key = 'Track' + track
-        self.track = board_dict_key
+        return board_dict_key
         
-        available_tracks.remove(track)
-        print('those tracks are still available', available_tracks)
-        print('you chose track number: ', track, board.dict_[board_dict_key])
-    
-    
+        
     def test_attribute(self, atr, test_value):
         """tests attribute, the self.atr against a test_value."""
         
@@ -506,6 +514,7 @@ class Player():
                 value = getattr(self, up)
                 value.increase_value(1)
                 break
+        
                 
        
     def show_hand(self):
@@ -647,7 +656,15 @@ class Player():
     def return_from_yard(self):
         pass
     
-
+    
+    def show_active_tile(self):
+        """ returns the current tile to challange and the complete track """
+        
+        challenge_tile = tile_dict[self.track][self.tier]
+        print('\n the track you are on: \n', tile_dict[self.track], '\nso far you have beaten ', self.tier -1, 'tiles.')
+        print('\n the Tile you need to beat: \n', challenge_tile)
+        
+        
     def tile_check(self):
         """lets player select the atr he wants to challenge in self.Track and self.tier;
         if passsed applies lvl-up m/ to player."""
@@ -684,7 +701,7 @@ class Player():
             print('\ngz, you are in tier', self.tier,' now.')
             self.level_up()
             
-        self.tile_checked = True
+        
 
 '''
 print(p1)
@@ -694,6 +711,15 @@ p1.track
 p1.tile_check()
 p1.success_pool
 tile_dict['Track1'][1]
+
+print(tile_dict)
+
+frank
+print(player_dict)
+frank = player_dict.select_player()
+frank.tile_check()
+print(frank)
+frank.select_track()
 '''
 
 # =============================================================================
@@ -828,12 +854,8 @@ class PMS():
     def select_player(self, **kwargs_select_player):
         """ enables selection of active player. """
         
-        name = ''
-        print(type(kwargs_select_player))
-        print(kwargs_select_player.items())
-        print('läuft?????????')
         
-        if kwargs_select_player.keys():
+        if not kwargs_select_player.keys():
             while True:
                 print(self.player_list)
                 name = input('pick a name: >')
@@ -844,9 +866,12 @@ class PMS():
             return self.player_dict[name]
         
         else:
-            print('läuft?????????')
+            selected_players = []
+            
             for name in kwargs_select_player.values():
-                yield self.player_dict[name]
+                selected_players.append(self.player_dict[name])
+            
+            return selected_players
                 
         
 '''
@@ -924,13 +949,15 @@ class Turn:
     def turn_options(self):
         """ the main menu, keeps the turn functionalities. """
         
-        allowed_cmds = ('1', '2', '3', '4', 'x', 'Q')
+        allowed_cmds = ('1', '2', '3', '4', '5', '6', 'x', 'Q')
         turn_menu = '\nHey ' + self.player_active.name + """:\nIt's your turn now.
         You can:
-            1: Activate your sepcial abilities.
-            2: Play cards from your hand.
-            3: Make your challenge attempt.
-            4: End your turn.
+            1: Show the current tile you need to beat.
+            2: Activate your special abilities.
+            3: Look at your hand.
+            4: Play cards from your hand.
+            5: Make your challenge attempt.
+            6: End your turn.
             
             x, Q : End the whole game.
             
@@ -944,12 +971,26 @@ class Turn:
             else:
                 print('You need to choose a number: 1-4. plz repeat.')
         
-        # special ability
+        # show the challenge tile
         if input_ == '1':
+            
+            self.player_active.show_active_tile()
+            
+            self.turn_options()
+            
+            
+        # special ability
+        if input_ == '2':
+            self.turn_options()
+            
+        # show players hand    
+        if input_ == '3':
+            self.player_active.show_hand()
+            
             self.turn_options()
             
         # play cards    
-        if input_ == '2':
+        if input_ == '4':
             if self.player_active.container.container_size() <= 0:
                 print('you currently can\'t play any cards, you have none.')
             else:
@@ -958,14 +999,17 @@ class Turn:
             self.turn_options()
             
         # challenge attempt            
-        if input_ == '3':
+        if input_ == '5':
             if self.player_active.tile_checked == True:
                 print('you already tried it this turn. Don\'t try to cheat.')
             else:
                 self.player_active.tile_check()
             
+            self.player_active.tile_checked = True                
+            turn.turn_options()
+            
         # end turn    
-        if input_ == '4':
+        if input_ == '6':
             self.turn_end()
             
         # end game    
@@ -1018,7 +1062,8 @@ if __name__ == '__main__':
     available_tracks = ['1', '2', '3', '4', '5']
     board = Board(10, 1, 4)
     tile_dict = board.dict_
-    player_dict = PMS(number=2, name = ['frank', 'tank']); print(player_dict)
+    #player_dict = PMS(number=2, name = ['frank', 'tank']); print(player_dict)
+    player_dict = PMS()
     deck = Deck()
     graveyard = Graveyard()
     turn = Turn()
@@ -1032,7 +1077,7 @@ if __name__ == '__main__':
 #
 def test(**kwargs):
     
-    if not kwargs.keys():
+    if kwargs.keys():
         print(kwargs.items())
     else:
         print('nothing')
