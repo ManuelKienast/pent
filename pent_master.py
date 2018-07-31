@@ -435,7 +435,7 @@ class Player():
         self.Intel         = Intel
         self.atr_tup       = ('Wit', 'Stren', 'Dex', 'Intel')
         self.atr_self_tup  = (self.Wit, self.Stren, self.Dex, self.Intel)
-        self.track         = self.select_track()
+        self.track         = -1
         self.tier          = 1
         self.container     = Hand()
         self.hand_size     = self.container.container_size()
@@ -449,39 +449,12 @@ class Player():
     
     def __str__(self):
         return "\nPlayer Name: {} \n{}'s Wit  : {} \n{}'s Stren: {} \n{}'s Dex  : {}\
-                \n{}'s Intel: {} \n{}'s Cards: \n{}".format\
+                \n{}'s Intel: {} \n{}'s Track: {} \n{}'s Cards: \n{}".format\
                 (self.name, self.name, self.Wit, self.name, self.Stren, self.name, self.Dex,\
-                 self.name, self.Intel, self.name, self.container.__str__())
+                 self.name, self.Intel, self.name, self.track, self.name, self.container.__str__())
     
     
-    def select_track(self):
-        """ sets the track a player will be playing on. """
-        
-        if player_dict.no_of_players + len(available_tracks) > 5:
-            
-            print('\n\n Hej,', self.name, '\n You can choose one of the following tracks: ')
-        
-            for count, track in enumerate(board.dict_, 1):
-                if str(count) in available_tracks:
-                    print(' \n', track, ':\n', board.dict_[track])
-            
-            while True:
-                track = input('Choose the track you want to challenge. Give me a number 1-5: >')
-                if track in available_tracks:
-                    break
-            
-            available_tracks.remove(track)
-            board_dict_key = 'Track' + track
-            print('you chose track number: ', track, board.dict_[board_dict_key])
-            
-            
-        else:
-            track = available_tracks.pop(0)
-            board_dict_key = 'Track' + track    
-        
-        return board_dict_key
-        
-        
+
     def test_attribute(self, atr, test_value):
         """tests attribute, the self.atr against a test_value."""
         
@@ -769,14 +742,45 @@ class PMS():
                 
                 if no_of_players in ['1', '2', '3', '4', '5']:
                     
+                    #no_of_players = no_of_players        
                     return int(no_of_players)
                     
                 else:
                     print('you need to enter a number like: 1 or 2 up to 5')
                     
         else:
+            #no_of_players = no_of_players
             return self.number
+        
+        
             
+    def select_track(self, players, name):
+        """ sets the track a player will be playing on. """
+    
+        print(players[name])
+        print('\n\n Hej,', self.name, '\n You can choose one of the following tracks: ')
+    
+        for count, track in enumerate(board.dict_, 1):
+            if str(count) in available_tracks:
+                print(' \n', track, ':\n', board.dict_[track])
+        
+        while True:
+            track_selected = input('Choose the track you want to challenge. Give me a number 1-5: >')
+            if track_selected in available_tracks:
+                break
+        
+        available_tracks.remove(track_selected)
+        board_dict_key = 'Track' + track_selected
+        print('you chose track number: ', track_selected, board.dict_[board_dict_key])
+        
+        print(players[name])
+        
+        setattr(players[name], 'track', board_dict_key)
+        
+        return players
+        
+        
+        
             
     def create_player(self):
         """ creates the player instances for all participating players. """
@@ -788,11 +792,16 @@ class PMS():
             for i in range(self.no_of_players):
                 name = input('name your player: >')
                 players[name] = Player(name, 'can kill stuff', Wit(1), Stren(1), Dex(1), Intel(1))
+                print(players[name])
+                players = self.select_track(players, name)
+                print(players[name])
             
         else:
             for name in self.name:
                 players[name] = Player(name, 'can kill stuff', Wit(1), Stren(1), Dex(1), Intel(1))
-            
+                print(players[name])
+                players = self.select_track(players, name)
+                print(players[name])
         return players
     
     
@@ -879,6 +888,8 @@ player_dict = PMS(number=2, name = ['frank', 'tank']); print(player_dict)
 player_dict.select_player(name=['tank','frank'])
 
 player_dict.player_dict['frank'].active_turn
+print(available_tracks)
+
 '''
 
 # =============================================================================
@@ -952,6 +963,7 @@ class Turn:
         allowed_cmds = ('1', '2', '3', '4', '5', '6', 'x', 'Q')
         turn_menu = '\nHey ' + self.player_active.name + """:\nIt's your turn now.
         You can:
+            
             1: Show the current tile you need to beat.
             2: Activate your special abilities.
             3: Look at your hand.
@@ -1063,6 +1075,7 @@ if __name__ == '__main__':
     board = Board(10, 1, 4)
     tile_dict = board.dict_
     #player_dict = PMS(number=2, name = ['frank', 'tank']); print(player_dict)
+    #no_of_players = PMS.init_pms()
     player_dict = PMS()
     deck = Deck()
     graveyard = Graveyard()
